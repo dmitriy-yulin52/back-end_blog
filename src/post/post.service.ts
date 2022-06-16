@@ -20,6 +20,14 @@ export class PostService {
     return this.repository.find();
   }
 
+  popular() {
+    return this.repository.find({
+      order: {
+        views: 'DESC',
+      },
+    });
+  }
+
   async findOne(id: number) {
     const find_post = await this.repository.findOneBy({ id: id });
     if (!find_post) {
