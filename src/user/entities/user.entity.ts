@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Length } from 'class-validator';
 
 @Entity('users')
@@ -15,4 +21,10 @@ export class UserEntity {
 
   @Column({ nullable: true })
   password?: string;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  create: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  update: Date;
 }
