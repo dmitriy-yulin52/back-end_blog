@@ -6,6 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './user/entities/user.entity';
 import { PostModule } from './post/post.module';
 import { PostEntity } from './post/entities/post.entity';
+import { CommentModule } from './comment/comment.module';
+
+console.log(process, 'process');
 
 @Module({
   imports: [
@@ -17,10 +20,11 @@ import { PostEntity } from './post/entities/post.entity';
       password: '0000',
       database: 'tjournal',
       entities: [UserEntity, PostEntity],
-      synchronize: true,
+      synchronize: !process.env.production,
     }),
     UserModule,
     PostModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
