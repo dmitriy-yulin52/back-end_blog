@@ -4,5 +4,5 @@ export class CreatePostDto {
   title: string;
   body: string;
   @IsArray()
-  tags: string;
+  tags?: string;
 }
