@@ -14,7 +14,7 @@ export class PostEntity {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ nullable: true })
   body: string;
 
   @Column({ default: 0 })
