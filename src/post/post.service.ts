@@ -51,6 +51,9 @@ export class PostService {
 
   async search(dto: SearchPostDto) {
     const qb = this.repository.createQueryBuilder('p');
+
+    qb.leftJoinAndSelect('p.user', 'user');
+
     qb.limit(dto.limit || 0);
     qb.take(dto.take || 10);
     if (dto.views) {

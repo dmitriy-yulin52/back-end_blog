@@ -23,7 +23,7 @@ export class PostEntity {
   @Column({ nullable: true })
   description: string;
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, { eager: true, nullable: false })
   user: UserEntity;
 
   @Column({ default: 0 })
