@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,11 +17,15 @@ export class PostService {
     private repository: Repository<PostEntity>,
   ) {}
 
-  create(dto: CreatePostDto) {
+  create(dto: CreatePostDto, userId: number) {
+    const firstParagraph = dto.body.find(el => el.type === 'paragraph')?.data
+      ?.text;
     return this.repository.save({
       title: dto.title,
       body: dto.body,
       tags: dto.tags,
+      user: { id: userId },
+      description: firstParagraph || '',
     });
   }
 
@@ -87,18 +95,31 @@ export class PostService {
     return this.repository.findOneBy({ id: id });
   }
 
-  async update(id: number, dto: UpdatePostDto) {
+  async update(id: number, dto: UpdatePostDto, userId: number) {
+    const find_post = await this.repository.findOneBy({ id: id });
+
+    const firstParagraph = dto.body.find(el => el.type === 'paragraph')?.data
+      ?.text;
+
+    if (!find_post) {
+      throw new NotFoundException('Статья не найдена');
+    }
+    return await this.repository.update(id, {
+      title: dto.title,
+      body: dto.body,
+      tags: dto.tags,
+      user: { id: userId },
+      description: firstParagraph || '',
+    });
+  }
+
+  async remove(id: number, userId: number) {
     const find_post = await this.repository.findOneBy({ id: id });
     if (!find_post) {
       throw new NotFoundException('Статья не найдена');
     }
-    return await this.repository.update(id, dto);
-  }
-
-  async remove(id: number) {
-    const find_post = await this.repository.findOneBy({ id: id });
-    if (!find_post) {
-      throw new NotFoundException('Статья не найдена');
+    if (find_post.user.id !== userId) {
+      throw new ForbiddenException('Нет доступа к этой статье!');
     }
     return await this.repository.delete(id);
   }
