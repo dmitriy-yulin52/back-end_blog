@@ -40,7 +40,7 @@ export class CommentService {
     return result.map(el => {
       return {
         ...el,
-        post: { id: el.post.id },
+        post: { id: el.post.id, title: el.post.title },
       };
     });
   }

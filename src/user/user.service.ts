@@ -5,8 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { LoginUserDto } from './dto/login-user-dto';
-import { SearchPostDto } from '../post/dto/search-post.dto';
 import { SearchUserDto } from './dto/search-user.dto';
+import { CommentEntity } from '../comment/entities/comment.entity';
 
 @Injectable()
 export class UserService {
@@ -26,8 +26,21 @@ export class UserService {
     });
   }
 
-  findAll() {
-    return this.repository.find();
+  async findAll() {
+    const result = await this.repository
+      .createQueryBuilder('u')
+      .leftJoinAndMapMany(
+        'u.comments',
+        CommentEntity,
+        'comment',
+        'comment.userId = u.id',
+      )
+      .loadRelationCountAndMap('b.commentCount', 'u.comments', 'comments')
+      .getMany();
+    return result.map(el => {
+      delete el.comments;
+      return el;
+    });
   }
 
   findById(id: number) {
